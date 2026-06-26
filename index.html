@@ -22,7 +22,7 @@
       position: fixed;
       inset: 0;
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       grid-template-rows: repeat(4, 1fr);
       gap: 3px;
       z-index: 0;
@@ -228,7 +228,7 @@
       return a;
     }
     const grid = document.getElementById('photo-grid');
-    shuffle(ALL_PHOTOS).slice(0, 24).forEach(name => {
+    shuffle(ALL_PHOTOS).slice(0, 20).forEach(name => {
       const div = document.createElement('div');
       div.style.backgroundImage = `url('photos/${name}')`;
       grid.appendChild(div);
