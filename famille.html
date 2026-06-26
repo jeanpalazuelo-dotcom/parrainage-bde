@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crée ta famille — Parrainage BDE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Cinzel', serif;
+      background: #050f07;
+    }
+
+    /* ── Grille photos ── */
+    #photo-grid {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      gap: 3px;
+      z-index: 0;
+    }
+    #photo-grid div {
+      background-size: cover;
+      background-position: center;
+    }
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center, rgba(5,15,8,0.48) 0%, rgba(5,15,8,0.82) 100%);
+      z-index: 1;
+    }
+
+    /* ── Page scrollable ── */
+    #page {
+      position: relative;
+      z-index: 2;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 0 1rem 5rem;
+    }
+
+    /* ── Bannière ── */
+    .banner-wrap {
+      overflow: hidden;
+      height: 210px;
+      position: relative;
+    }
+    .banner-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 40%, rgba(5,15,8,0.95) 100%);
+    }
+    .banner-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    /* ── Logo ── */
+    .logo-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: -58px;
+      position: relative;
+      z-index: 3;
+      margin-bottom: 1.4rem;
+    }
+    .logo-wrap img {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #d4a017;
+      box-shadow:
+        0 0 0 6px rgba(212,160,23,0.15),
+        0 0 40px rgba(212,160,23,0.45),
+        0 8px 30px rgba(0,0,0,0.6);
+    }
+
+    /* ── Titre ── */
+    h2 {
+      font-family: 'Cinzel Decorative', serif;
+      text-align: center;
+      color: #fff;
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-shadow: 0 0 30px rgba(212,160,23,0.4), 0 3px 15px rgba(0,0,0,0.7);
+      margin-bottom: 0.3rem;
+    }
+    h2 span { color: #d4a017; }
+
+    .subtitle {
+      font-family: 'Cinzel', serif;
+      text-align: center;
+      color: rgba(255,255,255,0.45);
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+
+    /* ── Séparateur ornemental ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      margin: 0.6rem 0 1.8rem;
+      color: #d4a017;
+      font-size: 0.8rem;
+      opacity: 0.65;
+    }
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #d4a017aa);
+    }
+    .divider::after {
+      background: linear-gradient(to left, transparent, #d4a017aa);
+    }
+
+    /* ── Cadre ornemental réutilisable ── */
+    .panel {
+      position: relative;
+      background: rgba(8, 25, 12, 0.78);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(212,160,23,0.3);
+      padding: 1.5rem 1.6rem;
+      margin-bottom: 1.1rem;
+    }
+    /* coins dorés */
+    .panel::before,
+    .panel::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-color: #d4a017;
+      border-style: solid;
+    }
+    .panel::before {
+      top: -1px; left: -1px;
+      border-width: 2px 0 0 2px;
+    }
+    .panel::after {
+      bottom: -1px; right: -1px;
+      border-width: 0 2px 2px 0;
+    }
+    /* coins opposés via pseudo sur enfant interne */
+    .panel .corner-tr,
+    .panel .corner-bl {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-color: #d4a017;
+      border-style: solid;
+    }
+    .panel .corner-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+    .panel .corner-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+
+    /* ── Encadré composition ── */
+    .info-panel .panel-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #d4a017;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
+    .info-panel .panel-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(212,160,23,0.3);
+    }
+    .info-panel p {
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.85;
+      letter-spacing: 0.03em;
+    }
+    .info-panel strong { color: #4ade80; font-weight: 600; }
+
+    /* ── Labels ── */
+    .field-label {
+      font-family: 'Cinzel', serif;
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #d4a017;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+
+    /* ── Inputs ── */
+    input[type="text"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(212,160,23,0.28);
+      border-bottom: 2px solid rgba(212,160,23,0.5);
+      color: #fff;
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      letter-spacing: 0.05em;
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+    input[type="text"]::placeholder {
+      color: rgba(255,255,255,0.25);
+      font-style: italic;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #d4a017;
+      border-bottom-color: #d4a017;
+      background: rgba(212,160,23,0.07);
+      box-shadow: 0 4px 20px rgba(212,160,23,0.15);
+    }
+
+    /* ── Membres 2A ── */
+    .membres-group { display: flex; flex-direction: column; gap: 0.55rem; }
+    .membre-row { display: flex; align-items: center; gap: 0.7rem; }
+    .membre-row input { flex: 1; }
+    .membre-row .num {
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      color: rgba(212,160,23,0.6);
+      font-weight: 700;
+      flex-shrink: 0;
+      width: 1.4rem;
+      text-align: right;
+    }
+
+    #btn-add-membre {
+      margin-top: 0.85rem;
+      width: 100%;
+      padding: 0.6rem 1rem;
+      background: transparent;
+      border: 1px dashed rgba(212,160,23,0.4);
+      color: rgba(212,160,23,0.7);
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    #btn-add-membre:hover {
+      background: rgba(212,160,23,0.08);
+      border-color: #d4a017;
+      color: #d4a017;
+    }
+    #btn-add-membre:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ── Question hâte ── */
+    .hate-question {
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+    }
+
+    .radio-group { display: flex; flex-direction: column; gap: 0.55rem; }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.7rem 1rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      transition: background 0.15s, border-color 0.15s;
+      user-select: none;
+      position: relative;
+    }
+    .radio-label input[type="radio"] {
+      width: 1rem;
+      height: 1rem;
+      cursor: pointer;
+      flex-shrink: 0;
+      accent-color: #16a34a;
+    }
+
+    .radio-label.oui {
+      color: rgba(255,255,255,0.8);
+      border-color: rgba(74,222,128,0.2);
+      background: rgba(22,163,74,0.08);
+    }
+    .radio-label.oui:has(input:checked) {
+      border-color: #4ade80;
+      background: rgba(22,163,74,0.2);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(74,222,128,0.15);
+    }
+    .radio-label.non {
+      color: rgba(255,255,255,0.5);
+      border-color: rgba(239,68,68,0.15);
+      background: rgba(239,68,68,0.05);
+    }
+    .radio-label.non:has(input:checked) {
+      border-color: #ef4444;
+      background: rgba(239,68,68,0.15);
+      color: #fff;
+    }
+
+    /* ── Bouton envoi ── */
+    #btn-submit {
+      width: 100%;
+      padding: 1.1rem;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #050f07;
+      background: linear-gradient(135deg, #b8860b, #d4a017, #f0c040, #d4a017, #b8860b);
+      background-size: 200% auto;
+      border: none;
+      cursor: pointer;
+      clip-path: polygon(14px 0%, calc(100% - 14px) 0%, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0% 50%);
+      box-shadow: 0 0 35px rgba(212,160,23,0.4);
+      transition: background-position 0.4s, box-shadow 0.3s, transform 0.2s;
+      margin-top: 0.5rem;
+    }
+    #btn-submit:hover {
+      background-position: right center;
+      box-shadow: 0 0 55px rgba(212,160,23,0.65);
+      transform: scale(1.02);
+    }
+    #btn-submit:active { transform: scale(0.97); }
+    #btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── Pop-up Non ── */
+    #popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(5,15,8,0.88);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+    #popup-overlay.visible { display: flex; }
+
+    .popup-box {
+      position: relative;
+      background: rgba(8,25,12,0.97);
+      border: 1px solid rgba(212,160,23,0.5);
+      max-width: 420px;
+      width: 100%;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      animation: pop-in 0.25s ease-out;
+      box-shadow: 0 0 60px rgba(212,160,23,0.2), 0 20px 60px rgba(0,0,0,0.6);
+    }
+    .popup-box::before { content: ''; position: absolute; top: -1px; left: -1px; width: 18px; height: 18px; border-top: 2px solid #d4a017; border-left: 2px solid #d4a017; }
+    .popup-box::after  { content: ''; position: absolute; bottom: -1px; right: -1px; width: 18px; height: 18px; border-bottom: 2px solid #d4a017; border-right: 2px solid #d4a017; }
+
+    @keyframes pop-in {
+      from { transform: scale(0.88); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+    .popup-box h3 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1rem;
+      color: #d4a017;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+    .popup-box p {
+      font-family: 'Cinzel', serif;
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.7;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.8rem;
+    }
+    .popup-box p strong { color: #ef4444; }
+    .popup-box button {
+      padding: 0.75rem 2rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #050f07;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s;
+      box-shadow: 0 0 20px rgba(22,163,74,0.35);
+    }
+    .popup-box button:hover { transform: scale(1.04); box-shadow: 0 0 30px rgba(22,163,74,0.5); }
+
+    /* ── Écran succès ── */
+    #success-screen {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: radial-gradient(ellipse at center, #0d2d18 0%, #050f07 100%);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 2rem;
+    }
+    #success-screen.visible { display: flex; }
+
+    #success-screen h2 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.9rem;
+      color: #d4a017;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 40px rgba(212,160,23,0.5);
+      margin-bottom: 0.8rem;
+    }
+    #success-screen .famille-name {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.3rem;
+      color: #4ade80;
+      letter-spacing: 0.06em;
+      margin: 0.6rem 0 1rem;
+    }
+    #success-screen p {
+      font-family: 'Cinzel', serif;
+      color: rgba(255,255,255,0.65);
+      font-size: 0.88rem;
+      letter-spacing: 0.06em;
+      line-height: 1.75;
+      max-width: 380px;
+    }
+    #success-screen .back-btn {
+      margin-top: 2.2rem;
+      display: inline-block;
+      padding: 0.75rem 2.2rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      text-decoration: none;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    #success-screen .back-btn:hover { border-color: #d4a017; color: #d4a017; }
+  </style>
+</head>
+<body>
+
+  <div id="photo-grid"></div>
+  <div id="overlay"></div>
+
+  <!-- Pop-up Non -->
+  <div id="popup-overlay">
+    <div class="popup-box">
+      <h3>Es-tu certain(e) ?</h3>
+      <p>
+        C'est sûrement une erreur d'inattention<br/>
+        mais tu as coché <strong>Non</strong>...<br/>
+        Les 1A vont être formidables, promis.
+      </p>
+      <button onclick="fermerPopup()">Je modifie mon choix</button>
+    </div>
+  </div>
+
+  <!-- Écran succès -->
+  <div id="success-screen">
+    <h2>Famille enregistrée</h2>
+    <div class="divider" style="color:#d4a017;opacity:0.6;">&#9670;</div>
+    <div class="famille-name" id="success-nom"></div>
+    <p>Votre famille a bien été créée.<br/>Rendez-vous à la rentrée pour rencontrer vos 1A.</p>
+    <a href="index.html" class="back-btn">Retour à l'accueil</a>
+  </div>
+
+  <!-- Page -->
+  <div id="page">
+
+    <div class="banner-wrap">
+      <img src="assets/baniere-bde.jpg" alt="BDE" />
+    </div>
+
+    <div class="logo-wrap">
+      <img src="assets/logo-bde.jpg" alt="Logo BDE" />
+    </div>
+
+    <h2>Crée ta <span>Famille</span></h2>
+    <p class="subtitle">Système de parrainage &mdash; BDE</p>
+
+    <!-- Composition -->
+    <div class="panel info-panel">
+      <span class="corner-tr"></span><span class="corner-bl"></span>
+      <div class="panel-title">Composition d'une famille</div>
+      <p>
+        Une famille est composée de <strong>3 à 5 étudiants de 2A</strong><br/>
+        et de <strong>4 à 5 étudiants de 1A</strong>.<br/>
+        Pour les groupes de 2A, essayez au maximum<br/>
+        de faire des <strong>groupes mixtes</strong>.
+      </p>
+    </div>
+
+    <form id="form-famille" novalidate>
+
+      <!-- Nom -->
+      <div class="panel">
+        <span class="corner-tr"></span><span class="corner-bl"></span>
+        <label class="field-label" for="nom-famille">Nom de ta famille</label>
+        <input type="text" id="nom-famille" name="nomFamille" placeholder="" required />
+      </div>
+
+      <!-- Membres 2A -->
+      <div class="panel">
+        <span class="corner-tr"></span><span class="corner-bl"></span>
+        <span class="field-label">Noms et prénoms des 2A</span>
+        <div class="membres-group" id="membres-group">
+          <div class="membre-row">
+            <span class="num">I.</span>
+            <input type="text" name="membre2a[]" placeholder="Nom Prénom" required />
+          </div>
+          <div class="membre-row">
+            <span class="num">II.</span>
+            <input type="text" name="membre2a[]" placeholder="Nom Prénom" required />
+          </div>
+          <div class="membre-row">
+            <span class="num">III.</span>
+            <input type="text" name="membre2a[]" placeholder="Nom Prénom" required />
+          </div>
+        </div>
+        <button type="button" id="btn-add-membre">+ Ajouter un(e) 2A</button>
+      </div>
+
+      <!-- Hâte -->
+      <div class="panel">
+        <span class="corner-tr"></span><span class="corner-bl"></span>
+        <p class="hate-question">As-tu hâte de rencontrer les nouveaux 1A ?</p>
+        <div class="radio-group">
+          <label class="radio-label oui">
+            <input type="radio" name="hate" value="oui" />
+            OUIIIIII !!
+          </label>
+          <label class="radio-label non">
+            <input type="radio" name="hate" value="non" />
+            Non
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" id="btn-submit">Envoie ma famille</button>
+
+    </form>
+  </div>
+
+  <script>
+    const ALL_PHOTOS = [
+      "DSCN2375.JPG","DSCN2376.JPG","DSCN2377.JPG","DSCN2378.JPG","DSCN2380.JPG",
+      "DSCN2381.JPG","DSCN2382.JPG","DSCN2383.JPG","DSCN2384.JPG","DSCN2385.JPG",
+      "DSCN2389.JPG","DSCN2390.JPG","DSCN2391.JPG","DSCN2392.JPG","DSCN2393.JPG",
+      "DSCN2394.JPG","DSCN2395.JPG","DSCN2396.JPG","DSCN2397.JPG","DSCN2398.JPG",
+      "DSCN2399.JPG","DSCN2400.JPG","DSCN2401.JPG","DSCN2402.JPG","DSCN2403.JPG",
+      "DSCN2404.JPG","DSCN2405.JPG","DSCN2406.JPG","DSCN2407.JPG","DSCN2408.JPG",
+      "DSCN2409.JPG","DSCN2410.JPG","DSCN2411.JPG","DSCN2412.JPG","DSCN2413.JPG",
+      "DSCN2414.JPG","DSCN2415.JPG","DSCN2416.JPG","DSCN2418.JPG","DSCN2419.JPG",
+      "DSCN2420.JPG","DSCN2421.JPG","DSCN2422.JPG","DSCN2423.JPG","DSCN2424.JPG",
+      "DSCN2425.JPG","DSCN2426.JPG","DSCN2427.JPG","DSCN2429.JPG","DSCN2435.JPG",
+      "DSCN2436.JPG","DSCN2437.JPG","DSCN2438.JPG","DSCN2439.JPG","DSCN2440.JPG",
+      "DSCN2441.JPG","DSCN2442.JPG","DSCN2443.JPG","DSCN2444.JPG","DSCN2445.JPG",
+      "DSCN2446.JPG","DSCN2447.JPG","DSCN2448.JPG","DSCN2449.JPG","DSCN2450.JPG",
+      "DSCN2451.JPG","DSCN2452.JPG","DSCN2453.JPG","DSCN2454.JPG","DSCN2455.JPG",
+      "DSCN2456.JPG","DSCN2457.JPG","DSCN2458.JPG","DSCN2459.JPG","DSCN2460.JPG",
+      "DSCN2461.JPG","DSCN2462.JPG","DSCN2463.JPG","DSCN2464.JPG","DSCN2465.JPG",
+      "DSCN2466.JPG","DSCN2467.JPG","DSCN2468.JPG","DSCN2469.JPG"
+    ];
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    const grid = document.getElementById('photo-grid');
+    shuffle(ALL_PHOTOS).slice(0, 30).forEach(name => {
+      const div = document.createElement('div');
+      div.style.backgroundImage = `url('photos/${name}')`;
+      grid.appendChild(div);
+    });
+
+    /* Numéros romains pour les membres ajoutés */
+    const ROMANS = ['I','II','III','IV','V'];
+    const group  = document.getElementById('membres-group');
+    const btnAdd = document.getElementById('btn-add-membre');
+    let extraCount = 0;
+
+    btnAdd.addEventListener('click', () => {
+      if (extraCount >= 2) return;
+      extraCount++;
+      const n = group.querySelectorAll('.membre-row').length;
+      const row = document.createElement('div');
+      row.className = 'membre-row';
+      row.innerHTML = `<span class="num">${ROMANS[n]}.</span>
+        <input type="text" name="membre2a[]" placeholder="Nom Prénom" />`;
+      group.appendChild(row);
+      if (extraCount >= 2) {
+        btnAdd.disabled = true;
+        btnAdd.textContent = 'Maximum atteint — 5 membres';
+      }
+    });
+
+    function fermerPopup() {
+      document.getElementById('popup-overlay').classList.remove('visible');
+      document.querySelector('input[name="hate"][value="non"]').checked = false;
+    }
+
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzit7Ti3KmHGxbmEhDMtX_OVQr51Uig6djPf7rWbAl886vmtFQsc4g-rcpSTZrrskDU-Q/exec';
+
+    document.getElementById('form-famille').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nomFamille = document.getElementById('nom-famille').value.trim();
+      const hateValue  = document.querySelector('input[name="hate"]:checked')?.value;
+      const membres    = [...document.querySelectorAll('input[name="membre2a[]"]')]
+                           .map(i => i.value.trim()).filter(Boolean);
+
+      if (!nomFamille) {
+        alert('Merci de donner un nom à ta famille.');
+        document.getElementById('nom-famille').focus();
+        return;
+      }
+      if (membres.length < 3) {
+        alert('Il faut au moins 3 noms de 2A renseignés.');
+        return;
+      }
+      if (!hateValue) {
+        alert('Merci de répondre à la question sur les 1A.');
+        return;
+      }
+      if (hateValue === 'non') {
+        document.getElementById('popup-overlay').classList.add('visible');
+        return;
+      }
+
+      const btnSubmit = document.getElementById('btn-submit');
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Envoi en cours...';
+
+      const payload = {
+        nomFamille,
+        membres2A: membres,
+        hateRencontrer: 'OUIIIIII !!',
+        timestamp: new Date().toLocaleString('fr-FR')
+      };
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        document.getElementById('success-nom').textContent = `"${nomFamille}"`;
+        document.getElementById('success-screen').classList.add('visible');
+      } catch (err) {
+        alert('Une erreur est survenue. Vérifie ta connexion et réessaie.');
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Envoie ma famille';
+      }
+    });
+  </script>
+</body>
+</html>

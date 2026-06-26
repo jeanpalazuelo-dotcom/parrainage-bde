@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parrainage BDE — Crée ta famille !</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      font-family: 'Cinzel', serif;
+      background: #050f07;
+    }
+
+    /* ── Grille photos ── */
+    #photo-grid {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 3px;
+      z-index: 0;
+    }
+    #photo-grid div {
+      background-size: cover;
+      background-position: center;
+    }
+
+    /* ── Voile dramatique ── */
+    #overlay {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at center, rgba(5,15,8,0.45) 0%, rgba(5,15,8,0.78) 100%);
+      z-index: 1;
+    }
+
+    /* ── Contenu ── */
+    #content {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    /* ── Badge ── */
+    .badge {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #d4a017;
+      margin-bottom: 1.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.9rem;
+    }
+    .badge::before,
+    .badge::after {
+      content: '';
+      display: block;
+      width: 50px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #d4a017);
+    }
+    .badge::after {
+      background: linear-gradient(to left, transparent, #d4a017);
+    }
+
+    /* ── Titre principal ── */
+    h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: clamp(2.8rem, 8vw, 6rem);
+      font-weight: 900;
+      color: #fff;
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+      text-shadow:
+        0 0 40px rgba(212,160,23,0.35),
+        0 4px 30px rgba(0,0,0,0.7);
+    }
+    h1 span {
+      color: #d4a017;
+      text-shadow:
+        0 0 30px rgba(212,160,23,0.6),
+        0 0 60px rgba(212,160,23,0.25);
+    }
+
+    /* ── Séparateur ornemental ── */
+    .ornament {
+      margin: 1.6rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      color: #d4a017;
+      font-size: 0.9rem;
+      opacity: 0.75;
+    }
+    .ornament::before,
+    .ornament::after {
+      content: '';
+      display: block;
+      width: 80px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, #d4a017bb);
+    }
+    .ornament::after {
+      background: linear-gradient(to left, transparent, #d4a017bb);
+    }
+
+    /* ── Sous-titre ── */
+    .subtitle {
+      color: rgba(255,255,255,0.72);
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.8rem, 1.8vw, 1.05rem);
+      max-width: 520px;
+      line-height: 1.75;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── Bouton ── */
+    .btn-wrap {
+      margin-top: 2.6rem;
+      position: relative;
+      display: inline-block;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 3rem;
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #050f07;
+      background: linear-gradient(135deg, #b8860b, #d4a017, #f0c040, #d4a017, #b8860b);
+      background-size: 200% auto;
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+      text-decoration: none;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: background-position 0.4s, box-shadow 0.3s, transform 0.2s;
+      clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 50%, calc(100% - 12px) 100%, 12px 100%, 0% 50%);
+      box-shadow: 0 0 30px rgba(212,160,23,0.4);
+    }
+    .btn:hover {
+      background-position: right center;
+      box-shadow: 0 0 50px rgba(212,160,23,0.65);
+      transform: scale(1.04);
+    }
+    .btn:active { transform: scale(0.97); }
+
+    /* Cadre décoratif autour du bouton */
+    .btn-wrap::before {
+      content: '— ✦ —';
+      display: block;
+      text-align: center;
+      color: #d4a017;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      margin-bottom: 0.9rem;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="photo-grid"></div>
+  <div id="overlay"></div>
+
+  <div id="content">
+    <div class="badge">Système de parrainage</div>
+
+    <h1>Crée ta<br/><span>Famille</span></h1>
+
+    <div class="ornament">&#9670;</div>
+
+    <p class="subtitle">
+      Le nouveau système de parrainage arrive.<br/>
+      Pour ce faire, nous avons besoin de vous.
+    </p>
+
+    <div class="btn-wrap">
+      <a href="famille.html" class="btn">Créer ma famille</a>
+    </div>
+  </div>
+
+  <script>
+    const ALL_PHOTOS = [
+      "DSCN2375.JPG","DSCN2376.JPG","DSCN2377.JPG","DSCN2378.JPG","DSCN2380.JPG",
+      "DSCN2381.JPG","DSCN2382.JPG","DSCN2383.JPG","DSCN2384.JPG","DSCN2385.JPG",
+      "DSCN2389.JPG","DSCN2390.JPG","DSCN2391.JPG","DSCN2392.JPG","DSCN2393.JPG",
+      "DSCN2394.JPG","DSCN2395.JPG","DSCN2396.JPG","DSCN2397.JPG","DSCN2398.JPG",
+      "DSCN2399.JPG","DSCN2400.JPG","DSCN2401.JPG","DSCN2402.JPG","DSCN2403.JPG",
+      "DSCN2404.JPG","DSCN2405.JPG","DSCN2406.JPG","DSCN2407.JPG","DSCN2408.JPG",
+      "DSCN2409.JPG","DSCN2410.JPG","DSCN2411.JPG","DSCN2412.JPG","DSCN2413.JPG",
+      "DSCN2414.JPG","DSCN2415.JPG","DSCN2416.JPG","DSCN2418.JPG","DSCN2419.JPG",
+      "DSCN2420.JPG","DSCN2421.JPG","DSCN2422.JPG","DSCN2423.JPG","DSCN2424.JPG",
+      "DSCN2425.JPG","DSCN2426.JPG","DSCN2427.JPG","DSCN2429.JPG","DSCN2435.JPG",
+      "DSCN2436.JPG","DSCN2437.JPG","DSCN2438.JPG","DSCN2439.JPG","DSCN2440.JPG",
+      "DSCN2441.JPG","DSCN2442.JPG","DSCN2443.JPG","DSCN2444.JPG","DSCN2445.JPG",
+      "DSCN2446.JPG","DSCN2447.JPG","DSCN2448.JPG","DSCN2449.JPG","DSCN2450.JPG",
+      "DSCN2451.JPG","DSCN2452.JPG","DSCN2453.JPG","DSCN2454.JPG","DSCN2455.JPG",
+      "DSCN2456.JPG","DSCN2457.JPG","DSCN2458.JPG","DSCN2459.JPG","DSCN2460.JPG",
+      "DSCN2461.JPG","DSCN2462.JPG","DSCN2463.JPG","DSCN2464.JPG","DSCN2465.JPG",
+      "DSCN2466.JPG","DSCN2467.JPG","DSCN2468.JPG","DSCN2469.JPG"
+    ];
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    const grid = document.getElementById('photo-grid');
+    shuffle(ALL_PHOTOS).slice(0, 24).forEach(name => {
+      const div = document.createElement('div');
+      div.style.backgroundImage = `url('photos/${name}')`;
+      grid.appendChild(div);
+    });
+  </script>
+</body>
+</html>
